@@ -1,2 +1,27 @@
-<h1>Hi</h1>
-<p>There's no useful UI for this door controller yet.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member Label Print</title>
+</head>
+<body>
+<h1>Scan your fob to continue</h1>
+<script type="text/javascript">
+    let fob = '';
+    document.onkeyup = function (ev) {
+      ev.stopPropagation();
+      ev.preventDefault();
+      if (ev.key === 'Enter') {
+          // submit fob
+          console.log("Fob: ", fob);
+          fob = '';
+      } else {
+          const n = Number(ev.key);
+          if (Number.isFinite(n) && n >= 0 && n <= 9) {
+              fob += ev.key;
+          }
+      }
+    };
+</script>
+</body>
+</html>
