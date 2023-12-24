@@ -18,7 +18,7 @@ Prints a label with the member's name on it when they scan their fob. Backed by 
    * SQL field type: Text (string data)
    * Display Type: text
 3. Create a new "Remote API key" with the following permissions:
-   * Users: get
+   * Users: index
 
 ## Installation
 
