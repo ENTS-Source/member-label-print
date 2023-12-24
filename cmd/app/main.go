@@ -4,15 +4,19 @@ import (
 	"github.com/ents-source/member-label-print/amember"
 	"github.com/ents-source/member-label-print/api"
 	"github.com/ents-source/member-label-print/assets"
+	"github.com/ents-source/member-label-print/printer"
 	"github.com/kelseyhightower/envconfig"
 	"log"
 	"os"
 	"os/signal"
+	"path"
 	"syscall"
 )
 
 type config struct {
 	HttpBind string `envconfig:"http_bind" default:"0.0.0.0:8080"`
+
+	PrinterPort string `envconfig:"serial_port"`
 
 	AmpApiKey     string `envconfig:"amp_api_key"`
 	AmpApiKeyFile string `envconfig:"amp_api_key_file"`
@@ -35,6 +39,12 @@ func main() {
 
 	amember.ApiKey = getPassword(c.AmpApiKey, c.AmpApiKeyFile)
 	amember.ApiRootUrl = c.AmpApiUrl
+
+	printer.SerialPort = c.PrinterPort
+	err = printer.LoadLogo(path.Join(webPath, "logo.png"))
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	wg := api.Start(c.HttpBind, webPath)
 

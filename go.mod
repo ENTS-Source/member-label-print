@@ -3,5 +3,12 @@ module github.com/ents-source/member-label-print
 go 1.20
 
 require (
+	github.com/hennedo/escpos v0.0.2-0.20221114190247-475ba147a030
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07
+)
+
+require (
+	github.com/qiniu/iconv v1.2.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
 )

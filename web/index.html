@@ -13,9 +13,20 @@
       ev.preventDefault();
       if (ev.key === 'Enter') {
           // submit fob
-          console.log("Fob: ", fob);
+          const url = `/print?fob=${Number(fob)}`; // strip leading zeros
           fob = '';
+
+          console.log("Request: ", url);
+          fetch(url, {
+              method: "POST",
+          }).then(r => r.text()).then(val => {
+              console.log("Response: ", val);
+          }).catch(err => {
+              console.error(err);
+              alert("There was an error. Please contact a director if the issue persists.");
+          });
       } else {
+          // Read fob (if valid number)
           const n = Number(ev.key);
           if (Number.isFinite(n) && n >= 0 && n <= 9) {
               fob += ev.key;

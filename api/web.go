@@ -13,6 +13,7 @@ var srv *http.Server
 func Start(addr string, static string) *sync.WaitGroup {
 	wg := new(sync.WaitGroup)
 
+	http.HandleFunc("/print", doPrint)
 	http.Handle("/", http.FileServer(http.Dir(static)))
 
 	go func() {
