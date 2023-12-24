@@ -12,14 +12,18 @@ import (
 func doPrint(w http.ResponseWriter, r *http.Request) {
 	fob := r.URL.Query().Get("fob")
 	if fob != "" {
-		doPrintFob(fob)
+		if err := doPrintFob(fob); err != nil {
+			panic(err)
+		}
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
 	label := r.URL.Query().Get("label")
 	if label != "" {
-		doPrintFob(label)
+		if err := doPrintLabel(label); err != nil {
+			panic(err)
+		}
 		w.WriteHeader(http.StatusOK)
 		return
 	}
@@ -46,6 +50,6 @@ func doPrintFob(fob string) error {
 }
 
 func doPrintLabel(label string) error {
-	// TODO
-	return nil
+	log.Println("PRINT LABEL: ", label)
+	return printer.DoPrint(label, "")
 }
