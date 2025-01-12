@@ -2,11 +2,12 @@ package api
 
 import (
 	"fmt"
-	"github.com/ents-source/member-label-print/amember"
-	"github.com/ents-source/member-label-print/printer"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/ents-source/member-label-print/amember"
+	"github.com/ents-source/member-label-print/printer"
 )
 
 func doPrint(w http.ResponseWriter, r *http.Request) {
@@ -41,12 +42,7 @@ func doPrintFob(fob string) error {
 		return fmt.Errorf("expected 1 user record, got %d", len(users))
 	}
 
-	name := users[0].Nickname
-	if name == "" {
-		name = users[0].FirstName + " " + users[0].LastName
-	}
-
-	return printer.DoPrint(users[0].Nickname, "ID: "+strconv.Itoa(users[0].Id))
+	return printer.DoPrint(users[0].Name(), "ID: "+strconv.Itoa(users[0].Id))
 }
 
 func doPrintLabel(label string) error {
