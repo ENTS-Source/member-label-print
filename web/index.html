@@ -16,6 +16,7 @@
             background: radial-gradient(84.9% 52.16% at 31.56% 3.43%, #004468 0%, #000 100%);
             cursor: none;
         }
+
         header {
             padding: 16px;
             display: flex;
@@ -23,18 +24,27 @@
             align-items: center;
             margin-bottom: 16px;
         }
+
+        h2 {
+            margin-left: 16px;
+        }
+
         header > * {
             padding: 0;
             margin: 0;
         }
+
         header > img {
             padding-right: 16px;
         }
-        #buttons {
+
+        .buttons {
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
+            margin-bottom: 44px;
         }
+
         button {
             font-size: 28px;
             border: 1px solid #004468;
@@ -46,55 +56,82 @@
     </style>
 </head>
 <body>
-<header>
-    <img src="logo.png" width="96" id="landing" />
-    <h1>Scan your fob or select a button below</h1>
-</header>
-<div id="buttons">
-    <button onclick="printLabel('Load by side', this)">
-        Load by side
-    </button>
-    <button onclick="printLabel('Fire together', this)">
-        Fire together
-    </button>
-    <button onclick="printLabel('Caution: sharp bits', this)">
-        Caution: sharp bits
-    </button>
-</div>
-<script type="text/javascript">
-    let fob = '';
-    document.onkeyup = function (ev) {
-      ev.stopPropagation();
-      ev.preventDefault();
-      if (ev.key === 'Enter') {
-          // submit fob
-          const url = `/print?fob=${Number(fob)}`; // strip leading zeros
-          fob = '';
+    <header>
+        <img src="logo.png" width="96" id="landing"/>
+        <h1>Scan your fob or select a button below</h1>
+    </header>
 
-          doReq(url);
-      } else {
-          // Read fob (if valid number)
-          const n = Number(ev.key);
-          if (Number.isFinite(n) && n >= 0 && n <= 9) {
-              fob += ev.key;
-          }
-      }
-    };
-    function printLabel(val, btn) {
-        btn.blur();
-        doReq(`/print?label=${encodeURIComponent(val)}`);
-    }
-    function doReq(url) {
-        console.log("Request: ", url);
-        fetch(url, {
-            method: "POST",
-        }).then(r => r.text()).then(val => {
-            console.log("Response: ", val);
-        }).catch(err => {
-            console.error(err);
-            alert("There was an error. Please contact a director if the issue persists.");
-        });
-    }
-</script>
+    <h2>Loading instructions</h2>
+    <div class="buttons">
+        <button onclick="printLabel('Load by side', this)">
+            Load by side
+        </button>
+        <button onclick="printLabel('Fire together', this)">
+            Fire together
+        </button>
+        <button onclick="printLabel('Caution: sharp bits', this)">
+            Caution: sharp bits
+        </button>
+        <button onclick="printLabel('Caution: heavy', this)">
+            Caution: heavy
+        </button>
+        <button onclick="printLabel('Caution: fragile', this)">
+            Caution: fragile
+        </button>
+    </div>
+
+    <h2>Rejections/please fix</h2>
+    <div class="buttons">
+        <button onclick="printLabel('Needs cookie', this)">
+            Needs cookie
+        </button>
+        <button onclick="printLabel('Glaze on bottom / wipe bottom', this)">
+            Glaze on bottom
+        </button>
+        <button onclick="printLabel('Not ready for bisque fire', this)">
+            Not ready for bisque fire
+        </button>
+        <button onclick="printLabel('Not ready for glaze fire', this)">
+            Not ready for glaze fire
+        </button>
+    </div>
+
+    <script type="text/javascript">
+        let fob = '';
+        document.onkeyup = function (ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+            if (ev.key === 'Enter') {
+                // submit fob
+                const url = `/print?fob=${Number(fob)}`; // strip leading zeros
+                fob = '';
+
+                doReq(url);
+            } else {
+                // Read fob (if valid number)
+                const n = Number(ev.key);
+                if (Number.isFinite(n) && n >= 0 && n <= 9) {
+                    fob += ev.key;
+                }
+            }
+        };
+
+        function printLabel(val, btn) {
+            btn.blur();
+            doReq(`/print?label=${encodeURIComponent(val)}`);
+        }
+
+        function doReq(url) {
+            console.log("Request: ", url);
+            fetch(url, {
+                method: "POST",
+            }).then(r => r.text()).then(val => {
+                console.log("Response: ", val);
+            }).catch(err => {
+                console.error(err);
+                alert("There was an error. Please contact a director if the issue persists.");
+            });
+        }
+    </script>
 </body>
 </html>
