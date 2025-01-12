@@ -1,6 +1,6 @@
 module github.com/ents-source/member-label-print
 
-go 1.20
+go 1.22
 
 require (
 	github.com/hennedo/escpos v0.0.2-0.20221114190247-475ba147a030
@@ -10,5 +10,5 @@ require (
 
 require (
 	github.com/qiniu/iconv v1.2.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 )
