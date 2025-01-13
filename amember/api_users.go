@@ -15,10 +15,11 @@ type User struct {
 }
 
 func (u *User) Name() string {
+	name := u.FirstName + " " + string(u.LastName[0]) + "."
 	if u.Nickname != "" {
-		return u.Nickname
+		return u.Nickname + " (" + name + ")"
 	}
-	return u.FirstName + " " + u.LastName
+	return name
 }
 
 func FindUsersByFob(fob string) ([]User, error) {
