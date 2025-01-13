@@ -63,36 +63,61 @@
 
     <h2>Loading instructions</h2>
     <div class="buttons">
-        <button onclick="printLabel('Load by side', '', this)">
+        <button onclick="printLabel('', 'Load by side', '', this)">
             Load by side
         </button>
-        <button onclick="printLabel('Fire together', '', this)">
+        <button onclick="printLabel('', 'Fire together', '', this)">
             Fire together
         </button>
-        <button onclick="printLabel('Caution: sharp bits', '', this)">
+        <button onclick="printLabel('CAUTION', 'Sharp bits', '', this)">
             Caution: sharp bits
         </button>
-        <button onclick="printLabel('Caution: heavy', '', this)">
+        <button onclick="printLabel('CAUTION', 'Heavy', '', this)">
             Caution: heavy
         </button>
-        <button onclick="printLabel('Caution: fragile', '', this)">
+        <button onclick="printLabel('CAUTION', 'Fragile', '', this)">
             Caution: fragile
+        </button>
+        <button onclick="printLabel('', 'Try to fire by:', 'If at all possible, please fire this piece by: ', this)">
+            Request: Try to fire before date
         </button>
     </div>
 
     <h2>Rejections/please fix</h2>
     <div class="buttons">
-        <button onclick="printLabel('Needs cookie', '', this)">
+        <button onclick="printLabel('REJECTED', 'Needs cookie', 'This piece needs a cookie underneath it to be fired.', this)">
             Needs cookie
         </button>
-        <button onclick="printLabel('Glaze on bottom', 'Please wipe the bottom of your piece before placing it back in the queue.', this)">
+        <button onclick="printLabel('REJECTED', 'Glaze on bottom', 'Please wipe the bottom of this piece before firing.', this)">
             Glaze on bottom
         </button>
-        <button onclick="printLabel('Too wet', '', this)">
-            Too wet
+        <button onclick="printLabel('REJECTED', 'Too wet', 'This piece needs to be bone dry before it can be fired.', this)">
+            Not bone dry
         </button>
-        <button onclick="printLabel('Needs hanging', '', this)">
-            Needs hanging
+        <button onclick="printLabel('REJECTED', 'Glaze may run', 'This piece has glaze too close to the bottom, and is likely to stick to the shelf/cookie. Please address before firing.', this)">
+            Glaze may run
+        </button>
+        <button onclick="printLabel('REJECTED', 'Cracked', 'This piece is cracked and likely to fall apart or affect other pieces in the kiln. Please address before firing.', this)">
+            Cracked
+        </button>
+        <button onclick="printLabel('REJECTED', 'Improper glaze?', 'Please clarify if this piece uses underglaze or regular glaze before firing.', this)">
+            Maybe improper glaze?
+        </button>
+        <button onclick="printLabel('REJECTED', 'Chips on outside', 'Chips may not be on the outside of a piece.', this)">
+            Chips on outside
+        </button>
+        <button onclick="printLabel('REJECTED', 'Please fix:', 'This piece needs the following corrected before it can be fired: ', this)">
+            Generic: Please fix
+        </button>
+    </div>
+
+    <h2>General</h2>
+    <div class="buttons">
+        <button onclick="printLabel('ABANDONED', 'Please claim if yours', 'This piece appears abandoned and may have its space reclaimed. Please put your name on this piece if it is yours.', this)">
+            Abandoned
+        </button>
+        <button onclick="printLabel('', 'Name required', 'Please put your name on this if it is yours.', this)">
+            No Name
         </button>
     </div>
 
@@ -116,9 +141,9 @@
             }
         };
 
-        function printLabel(val, paragraph, btn) {
+        function printLabel(kind, label, paragraph, btn) {
             btn.blur();
-            doReq(`/print?label=${encodeURIComponent(val)}&paragraph=${encodeURIComponent(paragraph)}`);
+            doReq(`/print?kind=${encodeURIComponent(kind)}&label=${encodeURIComponent(label)}&paragraph=${encodeURIComponent(paragraph)}`);
         }
 
         function doReq(url) {

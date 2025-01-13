@@ -7,7 +7,7 @@ import (
 	"github.com/tarm/serial"
 )
 
-func DoPrint(header string, additional string, paragraph string) error {
+func DoPrint(embossed string, header string, additional string, paragraph string) error {
 	config := &serial.Config{
 		Name:        SerialPort,
 		Baud:        9600,
@@ -27,6 +27,10 @@ func DoPrint(header string, additional string, paragraph string) error {
 	p.SetConfig(escpos.ConfigEpsonTMT20II) // Removes trailing zeros from lines
 
 	p.PrintImage(img)
+	if embossed != "" {
+		p.Reverse(true).Size(3, 3).Bold(true).Write(embossed)
+		p.LineFeed()
+	}
 	p.Bold(true).Size(2, 2).Write(header)
 	p.LineFeed()
 	if additional != "" {
