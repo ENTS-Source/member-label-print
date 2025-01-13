@@ -63,35 +63,35 @@
 
     <h2>Loading instructions</h2>
     <div class="buttons">
-        <button onclick="printLabel('Load by side', this)">
+        <button onclick="printLabel('Load by side', '', this)">
             Load by side
         </button>
-        <button onclick="printLabel('Fire together', this)">
+        <button onclick="printLabel('Fire together', '', this)">
             Fire together
         </button>
-        <button onclick="printLabel('Caution: sharp bits', this)">
+        <button onclick="printLabel('Caution: sharp bits', '', this)">
             Caution: sharp bits
         </button>
-        <button onclick="printLabel('Caution: heavy', this)">
+        <button onclick="printLabel('Caution: heavy', '', this)">
             Caution: heavy
         </button>
-        <button onclick="printLabel('Caution: fragile', this)">
+        <button onclick="printLabel('Caution: fragile', '', this)">
             Caution: fragile
         </button>
     </div>
 
     <h2>Rejections/please fix</h2>
     <div class="buttons">
-        <button onclick="printLabel('Needs cookie', this)">
+        <button onclick="printLabel('Needs cookie', '', this)">
             Needs cookie
         </button>
-        <button onclick="printLabel('Glaze on bottom\nPlease wipe bottom', this)">
+        <button onclick="printLabel('Glaze on bottom', 'Please wipe the bottom of your piece before placing it back in the queue.', this)">
             Glaze on bottom
         </button>
-        <button onclick="printLabel('Too wet', this)">
+        <button onclick="printLabel('Too wet', '', this)">
             Too wet
         </button>
-        <button onclick="printLabel('Needs hanging', this)">
+        <button onclick="printLabel('Needs hanging', '', this)">
             Needs hanging
         </button>
     </div>
@@ -116,9 +116,9 @@
             }
         };
 
-        function printLabel(val, btn) {
+        function printLabel(val, paragraph, btn) {
             btn.blur();
-            doReq(`/print?label=${encodeURIComponent(val)}`);
+            doReq(`/print?label=${encodeURIComponent(val)}&paragraph=${encodeURIComponent(paragraph)}`);
         }
 
         function doReq(url) {

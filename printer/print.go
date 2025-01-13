@@ -1,12 +1,13 @@
 package printer
 
 import (
+	"time"
+
 	"github.com/hennedo/escpos"
 	"github.com/tarm/serial"
-	"time"
 )
 
-func DoPrint(header string, additional string) error {
+func DoPrint(header string, additional string, paragraph string) error {
 	config := &serial.Config{
 		Name:        SerialPort,
 		Baud:        9600,
@@ -33,6 +34,11 @@ func DoPrint(header string, additional string) error {
 	}
 	now := time.Now().Format("January 02, 2006")
 	p.Bold(false).Size(1, 1).Justify(escpos.JustifyLeft).Write("Printed " + now + additional)
+	if paragraph != "" {
+		p.LineFeed()
+		p.LineFeed()
+		p.Bold(false).Size(1, 1).Justify(escpos.JustifyLeft).Write(paragraph)
+	}
 	p.LineFeed()
 	p.LineFeed()
 	p.LineFeed()
