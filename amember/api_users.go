@@ -17,7 +17,7 @@ type User struct {
 func (u *User) Name() string {
 	name := u.FirstName + " " + string(u.LastName[0]) + "."
 	if u.Nickname != "" {
-		return u.Nickname + " (" + name + ")"
+		return u.Nickname
 	}
 	return name
 }
