@@ -28,8 +28,9 @@ func DoPrint(embossed string, header string, additional string, paragraph string
 
 	p.PrintImage(img)
 	if embossed != "" {
-		p.Reverse(true).Size(3, 3).Bold(true).Write(embossed)
 		p.LineFeed()
+		p.Reverse(true).Size(3, 3).Bold(true).Write(embossed)
+		p.Reverse(false).LineFeed()
 	}
 	p.Bold(true).Size(2, 2).Write(header)
 	p.LineFeed()
