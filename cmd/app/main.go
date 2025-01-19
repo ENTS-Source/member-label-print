@@ -1,16 +1,17 @@
 package main
 
 import (
-	"github.com/ents-source/member-label-print/amember"
-	"github.com/ents-source/member-label-print/api"
-	"github.com/ents-source/member-label-print/assets"
-	"github.com/ents-source/member-label-print/printer"
-	"github.com/kelseyhightower/envconfig"
 	"log"
 	"os"
 	"os/signal"
 	"path"
 	"syscall"
+
+	"github.com/ents-source/go-amember-api/amember"
+	"github.com/ents-source/member-label-print/api"
+	"github.com/ents-source/member-label-print/assets"
+	"github.com/ents-source/member-label-print/printer"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type config struct {
@@ -37,8 +38,7 @@ func main() {
 		webPath = "./web"
 	}
 
-	amember.ApiKey = getPassword(c.AmpApiKey, c.AmpApiKeyFile)
-	amember.ApiRootUrl = c.AmpApiUrl
+	paymentsApi := amember.NewClient(c.AmpApiUrl, getPassword(c.AmpApiKey, c.AmpApiKeyFile))
 
 	printer.SerialPort = c.PrinterPort
 	err = printer.LoadLogo(path.Join(webPath, "logo.png"))
@@ -46,7 +46,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	wg := api.Start(c.HttpBind, webPath)
+	wg := api.Start(c.HttpBind, webPath, paymentsApi)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)

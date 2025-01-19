@@ -6,12 +6,16 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/ents-source/go-amember-api/amember"
 )
 
 var srv *http.Server
+var amemberProApi *amember.Client
 
-func Start(addr string, static string) *sync.WaitGroup {
+func Start(addr string, static string, paymentsApi *amember.Client) *sync.WaitGroup {
 	wg := new(sync.WaitGroup)
+	amemberProApi = paymentsApi
 
 	http.HandleFunc("/print", doPrint)
 	http.Handle("/", http.FileServer(http.Dir(static)))

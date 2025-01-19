@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ents-source/member-label-print/amember"
 	"github.com/ents-source/member-label-print/printer"
 )
 
@@ -34,7 +33,7 @@ func doPrint(w http.ResponseWriter, r *http.Request) {
 
 func doPrintFob(fob string) error {
 	log.Println("PRINT FOB: ", fob)
-	users, err := amember.FindUsersByFob(fob)
+	users, err := amemberProApi.FindUsersByFob(fob)
 	if err != nil {
 		return err
 	}
