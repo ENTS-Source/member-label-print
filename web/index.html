@@ -81,6 +81,9 @@
         <button onclick="printLabel('CAUTION', 'Fragile', '', this)">
             Caution: fragile
         </button>
+        <button onclick="printLabel('', 'Fire anyways', 'This piece is cracked, but should be fired as-is', this)">
+            Cracked, fire anyways
+        </button>
         <button onclick="printLabel('', 'Try to fire by:', 'If at all possible, please fire this piece by: ', this)">
             Request: Try to fire before date
         </button>
@@ -127,6 +130,9 @@
         </button>
         <button onclick="printLabel('', 'Unloaded - please pick up', '', this)">
             Unloaded
+        </button>
+        <button onclick="printLabel('LOAD FIRST', 'Missed last load', 'This piece was missed in the last load. Please load it on the next load.', this)">
+            Missed last load
         </button>
         <button onclick="printLabel('', 'Name required', 'Please put your name on this if it is yours.', this)">
             No Name
