@@ -38,7 +38,7 @@ func main() {
 		webPath = "./web"
 	}
 
-	paymentsApi := amember.NewClient(c.AmpApiUrl, getPassword(c.AmpApiKey, c.AmpApiKeyFile))
+	paymentsApi := amember.NewClient(getPassword(c.AmpApiKey, c.AmpApiKeyFile), c.AmpApiUrl)
 
 	printer.SerialPort = c.PrinterPort
 	err = printer.LoadLogo(path.Join(webPath, "logo.png"))
