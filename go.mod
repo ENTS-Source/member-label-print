@@ -1,6 +1,6 @@
 module github.com/ents-source/member-label-print
 
-go 1.22
+go 1.24.0
 
 require (
 	github.com/ents-source/go-amember-api v0.0.0-20250331002413-9b73e32be771
@@ -11,5 +11,5 @@ require (
 
 require (
 	github.com/qiniu/iconv v1.2.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
 )
