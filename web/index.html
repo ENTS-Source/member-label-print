@@ -128,7 +128,7 @@
         <button onclick="printLabel('ABANDONED', 'Please claim if yours', 'This piece appears abandoned and may have its space reclaimed. Please put your name on this piece if it is yours.', this)">
             Abandoned / please claim
         </button>
-        <button onclick="printLabel('', 'Unloaded - please pick up', '', this)">
+        <button onclick="printLabel('', 'UNLOADED', 'Please pick up this piece before it becomes abandoned.', this, true)">
             Unloaded
         </button>
         <button onclick="printLabel('LOAD FIRST', 'Missed last load', 'This piece was missed in the last load. Please load it on the next load.', this)">
@@ -165,9 +165,15 @@
             }
         };
 
-        function printLabel(kind, label, paragraph, btn) {
+        function printLabel(kind, label, paragraph, btn, withAbandonDate = false) {
             btn.blur();
-            doReq(`/print?kind=${encodeURIComponent(kind)}&label=${encodeURIComponent(label)}&paragraph=${encodeURIComponent(paragraph)}`);
+            let path = `/print?kind=${encodeURIComponent(kind)}&label=${encodeURIComponent(label)}&paragraph=${encodeURIComponent(paragraph)}`;
+            if (withAbandonDate) {
+                const date = new Date();
+                date.setMonth(date.getMonth() + 1);
+                path += `&expireDate=${encodeURIComponent(date.getTime())}&expireLabel=${encodeURIComponent("Can be considered abandoned after:")}`;
+            }
+            doReq(path);
         }
 
         function doReq(url) {

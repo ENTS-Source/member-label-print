@@ -16,7 +16,7 @@ func printImage(img image.Image, printer *escpos.Escpos) error {
 	return err
 }
 
-func DoPrint(embossed string, header string, additional string, paragraph string) error {
+func DoPrint(embossed string, header string, additional string, paragraph string, expireLabel string, expire string) error {
 	config := &serial.Config{
 		Name:        SerialPort,
 		Baud:        9600,
@@ -54,6 +54,23 @@ func DoPrint(embossed string, header string, additional string, paragraph string
 		"em": "true",
 	}, header)
 	p.Linefeed()
+
+	if expireLabel != "" {
+		p.Linefeed()
+		p.SetFontSize(1, 1)
+		p.Text(map[string]string{
+			"em": "true",
+		}, expireLabel)
+		p.Linefeed()
+		p.SetFontSize(8, 8)
+		p.Text(map[string]string{
+			"em":      "true",
+			"reverse": "true",
+		}, expire)
+		p.SetReverse(0)
+		p.Linefeed()
+		p.Linefeed()
+	}
 
 	if additional != "" {
 		additional = " - " + additional
