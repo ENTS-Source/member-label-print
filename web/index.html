@@ -145,6 +145,13 @@
         </button>
     </div>
 
+    <h2>Bulk</h2>
+    <div class="buttons">
+        <button onclick="repeat(20, () => printLabel('', 'UNLOADED', 'Please pick up this piece before it becomes abandoned.', this, true))">
+            20x Unloaded
+        </button>
+    </div>
+
     <script type="text/javascript">
         let fob = '';
         document.onkeyup = function (ev) {
@@ -164,6 +171,12 @@
                 }
             }
         };
+
+        function repeat(times, fn) {
+            for (let i = 0; i < times; i++) {
+                setTimeout(fn, i * 500);
+            }
+        }
 
         function printLabel(kind, label, paragraph, btn, withAbandonDate = false) {
             btn.blur();
