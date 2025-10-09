@@ -1,11 +1,20 @@
 package printer
 
 import (
+	"image"
+	"log"
+	"os"
 	"time"
 
-	"github.com/hennedo/escpos"
+	"github.com/kenshaw/escpos"
 	"github.com/tarm/serial"
 )
+
+func printImage(img image.Image, printer *escpos.Escpos) error {
+	xl, xh, yl, yh, data := renderImage(img)
+	_, err := printer.WriteRaw(append([]byte{0x1D, 'v', 48, 0, xl, xh, yl, yh}, data...))
+	return err
+}
 
 func DoPrint(embossed string, header string, additional string, paragraph string) error {
 	config := &serial.Config{
@@ -24,53 +33,44 @@ func DoPrint(embossed string, header string, additional string, paragraph string
 	defer socket.Close()
 
 	p := escpos.New(socket)
-	p.SetConfig(escpos.ConfigEpsonTMT20II) // Removes trailing zeros from lines
+	p.SetLogger(log.New(os.Stdout, "ESCPOS: ", 0))
+	p.Init()
 
-	if _, err = p.PrintImage(img); err != nil {
+	if err = printImage(img, p); err != nil {
 		return err
 	}
 	if embossed != "" {
-		if _, err = p.LineFeed(); err != nil {
-			return err
-		}
-		if _, err = p.Reverse(true).Size(3, 3).Bold(true).Write(embossed); err != nil {
-			return err
-		}
-		if _, err = p.Reverse(false).LineFeed(); err != nil {
-			return err
-		}
+		p.Linefeed()
+		p.SetFontSize(3, 3)
+		p.Text(map[string]string{
+			"em":      "true",
+			"reverse": "true",
+		}, embossed)
+		p.SetReverse(0)
+		p.Linefeed()
 	}
-	if _, err = p.Bold(true).Size(2, 2).Write(header); err != nil {
-		return err
-	}
-	if _, err = p.LineFeed(); err != nil {
-		return err
-	}
+	p.SetFontSize(2, 2)
+	p.Text(map[string]string{
+		"em": "true",
+	}, header)
+	p.Linefeed()
+
 	if additional != "" {
 		additional = " - " + additional
 	}
 	now := time.Now().Format("January 02, 2006")
-	if _, err = p.Bold(false).Size(1, 1).Justify(escpos.JustifyLeft).Write("Printed " + now + additional); err != nil {
-		return err
-	}
+	p.SetFontSize(1, 1)
+	p.Text(map[string]string{}, "Printed "+now+additional)
+	p.Linefeed()
 	if paragraph != "" {
-		for range 2 {
-			if _, err = p.LineFeed(); err != nil {
-				return err
-			}
-		}
-		p.Bold(false).Size(1, 1).Justify(escpos.JustifyLeft).Write(paragraph)
+		p.Linefeed()
+		p.Linefeed()
+		p.Text(map[string]string{}, paragraph)
 	}
 	for range 5 {
-		if _, err = p.LineFeed(); err != nil {
-			return err
-		}
+		p.Linefeed()
 	}
-
-	// You need to use either p.Print() or p.PrintAndCut() at the end to send the data to the printer.
-	if err = p.PrintAndCut(); err != nil {
-		return err
-	}
-
-	return nil
+	p.Cut()
+	p.End()
+	return socket.Flush()
 }
