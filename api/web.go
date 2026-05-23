@@ -18,6 +18,7 @@ func Start(addr string, static string, paymentsApi *amember.Client) *sync.WaitGr
 	amemberProApi = paymentsApi
 
 	http.HandleFunc("/print", doPrint)
+	http.HandleFunc("/check", doCheck)
 	http.Handle("/", http.FileServer(http.Dir(static)))
 
 	go func() {

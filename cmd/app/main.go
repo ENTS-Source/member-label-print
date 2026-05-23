@@ -19,9 +19,10 @@ type config struct {
 
 	PrinterPort string `envconfig:"serial_port"`
 
-	AmpApiKey     string `envconfig:"amp_api_key"`
-	AmpApiKeyFile string `envconfig:"amp_api_key_file"`
-	AmpApiUrl     string `envconfig:"amp_api_url"`
+	AmpApiKey                 string `envconfig:"amp_api_key"`
+	AmpApiKeyFile             string `envconfig:"amp_api_key_file"`
+	AmpApiUrl                 string `envconfig:"amp_api_url"`
+	AmpActiveMemberCategoryId int    `envconfig:"amp_active_member_category_id"`
 }
 
 func main() {
@@ -46,6 +47,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	api.AMPCategoryId = c.AmpActiveMemberCategoryId
 	wg := api.Start(c.HttpBind, webPath, paymentsApi)
 
 	stop := make(chan os.Signal, 1)

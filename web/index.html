@@ -53,106 +53,26 @@
             padding: 24px 24px;
             margin: 16px;
         }
+
+        #attendees {
+            margin: 16px;
+        }
+
+        .attendee {
+            margin-bottom: 4px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <header>
         <img src="logo.png" width="96" id="landing"/>
-        <h1>Scan your fob or select a button below</h1>
+        <h1>Scan fob to sign in to meeting</h1>
     </header>
 
-    <h2>Loading instructions</h2>
-    <div class="buttons">
-        <button onclick="printLabel('REQUEST', 'Add cookie', 'There are no cookies available - please add one!', this)">
-            Add cookie please
-        </button>
-        <button onclick="printLabel('', 'Fire together', '', this)">
-            Fire together
-        </button>
-        <button onclick="printLabel('', 'Underglaze in use', '', this)">
-            Uses underglaze
-        </button>
-        <button onclick="printLabel('CAUTION', 'Sharp bits', '', this)">
-            Caution: sharp bits
-        </button>
-        <button onclick="printLabel('CAUTION', 'Heavy', '', this)">
-            Caution: heavy
-        </button>
-        <button onclick="printLabel('CAUTION', 'Fragile', '', this)">
-            Caution: fragile
-        </button>
-        <button onclick="printLabel('', 'Fire anyways', 'This piece is cracked, but should be fired as-is', this)">
-            Cracked, fire anyways
-        </button>
-        <button onclick="printLabel('', 'Try to fire by:', 'If at all possible, please fire this piece by: ', this)">
-            Request: Try to fire before date
-        </button>
-    </div>
-
-    <h2>Rejections/please fix</h2>
-    <div class="buttons">
-        <button onclick="printLabel('REJECTED', 'Too wet', 'This piece needs to be bone dry before it can be fired.', this)">
-            Not bone dry
-        </button>
-        <button onclick="printLabel('REJECTED', 'Needs cookie', 'This piece needs a cookie underneath it to be fired.', this)">
-            Needs cookie
-        </button>
-        <button onclick="printLabel('REJECTED', 'Glaze on bottom', 'Please wipe the bottom of this piece before firing.', this)">
-            Glaze on bottom
-        </button>
-        <button onclick="printLabel('REJECTED', 'Glaze too close to bottom', 'This piece has glaze too close to the bottom, and is likely to stick to the shelf/cookie. Please address before firing.', this)">
-            Glaze too close to bottom
-        </button>
-        <button onclick="printLabel('REJECTED', 'Glaze flaking', 'This glaze is flaking and may damage pieces around it when fired. Please correct before firing.', this)">
-            Glaze flaking
-        </button>
-        <button onclick="printLabel('REJECTED', 'Improper glaze?', 'Please clarify if this piece uses underglaze or regular glaze before firing.', this)">
-            Maybe improper glaze?
-        </button>
-        <button onclick="printLabel('REJECTED', 'Chips on outside', 'Chips may not be on the outside of a piece.', this)">
-            Chips on outside
-        </button>
-        <button onclick="printLabel('REJECTED', 'Cracked', 'This piece is cracked and likely to fall apart or affect other pieces in the kiln. Please address before firing.', this)">
-            Cracked
-        </button>
-        <button onclick="printLabel('REJECTED', 'Might explode', 'This piece has a chance of exploding. Please add vent holes.', this)">
-            Might explode
-        </button>
-        <button onclick="printLabel('REJECTED', 'Please fix:', 'This piece needs the following corrected before it can be fired: ', this)">
-            Generic: Please fix
-        </button>
-    </div>
-
-    <h2>General</h2>
-    <div class="buttons">
-        <button onclick="printLabel('ABANDONED', 'Please claim if yours', 'This piece appears abandoned and may have its space reclaimed. Please put your name on this piece if it is yours.', this)">
-            Abandoned / please claim
-        </button>
-        <button onclick="printLabel('', 'UNLOADED', 'Please pick up this piece before it becomes abandoned.', this, true)">
-            Unloaded
-        </button>
-        <button onclick="printLabel('LOAD FIRST', 'Missed last load', 'This piece was missed in the last load. Please load it on the next load.', this)">
-            Missed last load
-        </button>
-        <button onclick="printLabel('', 'Name required', 'Please put your name on this if it is yours.', this)">
-            No Name
-        </button>
-        <button onclick="printLabel('', ' ', '', this)"> <!-- space to trick the printer -->
-            Blank Label
-        </button>
-        <button onclick="printLabel('', 'Free to take', 'Replace this label with your name to claim', this)">
-            Free to take
-        </button>
-        <button onclick="printLabel('STORE THIS', 'Inactive member', 'This can be moved to a higher storage area/shelf.', this)">
-            Inactive/Move to storage
-        </button>
-    </div>
-
-    <h2>Bulk</h2>
-    <div class="buttons">
-        <button onclick="repeat(20, () => printLabel('', 'UNLOADED', 'Please pick up this piece before it becomes abandoned.', this, true))">
-            20x Unloaded
-        </button>
+    <h2>Attendees</h2>
+    <div id="attendees">
+        <!-- populated by javascript -->
     </div>
 
     <script type="text/javascript">
@@ -162,7 +82,7 @@
             ev.preventDefault();
             if (ev.key === 'Enter') {
                 // submit fob
-                const url = `/print?fob=${Number(fob)}`; // strip leading zeros
+                const url = `/check?fob=${Number(fob)}`; // strip leading zeros
                 fob = '';
 
                 doReq(url);
@@ -175,33 +95,29 @@
             }
         };
 
-        function repeat(times, fn) {
-            for (let i = 0; i < times; i++) {
-                setTimeout(fn, i * 500);
-            }
-        }
-
-        function printLabel(kind, label, paragraph, btn, withAbandonDate = false) {
-            btn.blur();
-            let path = `/print?kind=${encodeURIComponent(kind)}&label=${encodeURIComponent(label)}&paragraph=${encodeURIComponent(paragraph)}`;
-            if (withAbandonDate) {
-                const date = new Date();
-                date.setMonth(date.getMonth() + 1);
-                path += `&expireDate=${encodeURIComponent(date.getTime())}&expireLabel=${encodeURIComponent("Can be considered abandoned after:")}`;
-            }
-            doReq(path);
-        }
-
-        function doReq(url) {
+        async function doReq(url) {
             console.log("Request: ", url);
-            fetch(url, {
-                method: "POST",
-            }).then(r => r.text()).then(val => {
-                console.log("Response: ", val);
-            }).catch(err => {
-                console.error(err);
-                alert("There was an error. Please contact a director if the issue persists.");
-            });
+            const res = await fetch(url, {method: "POST"});
+            const text = await res.text();
+            console.log(`Response (${res.status}): ${text}`);
+            const target = document.getElementById("attendees");
+            let validAttendee = res.status === 200;
+            if (res.status === 404 || res.status === 200) {
+                target.innerHTML += `<div class="attendee">${validAttendee ? '✅' : '❌'} ${escapeHTML(text)}</div>`;
+            } else {
+                target.innerHTML += `<div class="attendee">⚠️ ${escapeHTML(text || `Unknown Member (${url})`)}</div>`;
+            }
+        }
+
+        function escapeHTML(str) {
+            const p = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            };
+            return str.replace(/[&<>"']/g, s => p[s]);
         }
     </script>
 </body>

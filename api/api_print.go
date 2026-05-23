@@ -10,6 +10,8 @@ import (
 	"github.com/ents-source/member-label-print/printer"
 )
 
+var AMPCategoryId int
+
 func doPrint(w http.ResponseWriter, r *http.Request) {
 	fob := r.URL.Query().Get("fob")
 	if fob != "" {
@@ -56,4 +58,55 @@ func doPrintFob(fob string) error {
 func doPrintLabel(embossed string, label string, paragraph string, expireLabel string, expireDate string) error {
 	log.Println("PRINT LABEL: ", embossed, label, paragraph)
 	return printer.DoPrint(embossed, label, "", paragraph, expireLabel, expireDate)
+}
+
+func doCheck(w http.ResponseWriter, r *http.Request) {
+	fob := r.URL.Query().Get("fob")
+	ok, name, err := doCheckMembership(fob)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if ok {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+	}
+	_, _ = w.Write([]byte(name))
+}
+
+func doCheckMembership(fob string) (bool, string, error) {
+	log.Println("CHECK MEMBERSHIP: ", fob)
+	users, err := amemberProApi.FindUsersByFob(fob)
+	if err != nil {
+		return false, fob, err
+	}
+	if len(users) != 1 {
+		return false, fob, fmt.Errorf("expected 1 user record, got %d", len(users))
+	}
+
+	productIds, err := amemberProApi.GetProductIdsForCategory(AMPCategoryId)
+	//log.Println("PRODUCT IDS: ", productIds)
+	if err != nil {
+		return false, fob, err
+	}
+	name := fmt.Sprintf("%s %s (%s; %d)", users[0].FirstName, users[0].LastName, users[0].Nickname, users[0].Id)
+	for _, access := range users[0].Nested.Access {
+		ok, err := access.IsActiveOn(time.Now())
+		if err != nil {
+			return false, name, err
+		}
+
+		//log.Printf("ACCESS: %#v (%t)", access, ok)
+		if ok {
+			for _, productId := range productIds {
+				if access.ProductId == strconv.Itoa(productId) {
+					return true, name, nil
+				}
+			}
+		}
+	}
+
+	return false, name, nil
 }
