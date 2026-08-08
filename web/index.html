@@ -69,6 +69,11 @@
         <img src="logo.png" width="96" id="landing"/>
         <h1>Scan fob to sign in to meeting</h1>
     </header>
+    <h2>Ballots printed: <span id="ballotsGiven">0</span></h2>
+
+    <button onclick="printBallot(this)">
+        Print proxy ballot
+    </button>
 
     <h2>Attendees</h2>
     <div id="attendees">
@@ -76,6 +81,8 @@
     </div>
 
     <script type="text/javascript">
+        const ballotsGiven = [];
+
         let fob = '';
         document.onkeyup = function (ev) {
             ev.stopPropagation();
@@ -103,7 +110,12 @@
             const target = document.getElementById("attendees");
             let validAttendee = res.status === 200;
             if (res.status === 404 || res.status === 200) {
-                target.innerHTML += `<div class="attendee">${validAttendee ? '✅' : '❌'} ${escapeHTML(text)}</div>`;
+                const hasBallot = ballotsGiven.includes(url);
+                target.innerHTML += `<div class="attendee">${validAttendee ? (hasBallot ? '⚠️ [Duplicate]' : '✅') : '❌'} ${escapeHTML(text)}</div>`;
+                if (validAttendee && !hasBallot) {
+                    ballotsGiven.push(url);
+                    printBallot(null);
+                }
             } else {
                 target.innerHTML += `<div class="attendee">⚠️ ${escapeHTML(text || `Unknown Member (${url})`)}</div>`;
             }
@@ -118,6 +130,20 @@
                 "'": '&#39;'
             };
             return str.replace(/[&<>"']/g, s => p[s]);
+        }
+
+        async function printBallot(btn) {
+            if (btn) {
+                btn.blur();
+                ballotsGiven.push("proxy");
+            }
+            document.getElementById("ballotsGiven").innerHTML = ballotsGiven.length.toString();
+
+            const url = '/print?ballot=true';
+            console.log("Request: ", url);
+            const res = await fetch(url, {method: "POST"});
+            const text = await res.text();
+            console.log(`Response (${res.status}): ${text}`);
         }
     </script>
 </body>

@@ -21,6 +21,14 @@ func doPrint(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+	ballot := r.URL.Query().Get("ballot")
+	if ballot != "" {
+		if err := doPrintBallot(); err != nil {
+			panic(err)
+		}
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	label := r.URL.Query().Get("label")
 	if label != "" {
@@ -40,6 +48,17 @@ func doPrint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusBadRequest)
+}
+
+func doPrintBallot() error {
+	log.Println("PRINT BALLOT")
+	return printer.DoPrintBallot(2026, false, []string{
+		"Travis Ralston",
+		"Michael Kulpa",
+		"Karly Kulpa",
+		"Rudy Janvier",
+		"Chris Bacivan",
+	})
 }
 
 func doPrintFob(fob string) error {
