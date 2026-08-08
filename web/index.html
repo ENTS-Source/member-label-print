@@ -81,7 +81,25 @@
     </div>
 
     <script type="text/javascript">
-        const ballotsGiven = [];
+        let ballotsGiven = [];
+
+        function saveState() {
+            localStorage.setItem("ballotsGiven", JSON.stringify(ballotsGiven));
+            localStorage.setItem("attendees", document.getElementById("attendees").innerHTML);
+        }
+
+        function restoreState() {
+            const ballotsGivenStr = localStorage.getItem("ballotsGiven");
+            if (ballotsGivenStr) {
+                ballotsGiven = JSON.parse(ballotsGivenStr);
+                document.getElementById("ballotsGiven").innerHTML = ballotsGiven.length.toString();
+            }
+            const attendeesStr = localStorage.getItem("attendees");
+            if (attendeesStr) {
+                document.getElementById("attendees").innerHTML = attendeesStr;
+            }
+        }
+        restoreState();
 
         let fob = '';
         document.onkeyup = function (ev) {
@@ -119,6 +137,7 @@
             } else {
                 target.innerHTML += `<div class="attendee">⚠️ ${escapeHTML(text || `Unknown Member (${url})`)}</div>`;
             }
+            saveState();
         }
 
         function escapeHTML(str) {
@@ -138,6 +157,7 @@
                 ballotsGiven.push("proxy");
             }
             document.getElementById("ballotsGiven").innerHTML = ballotsGiven.length.toString();
+            saveState();
 
             const url = '/print?ballot=true';
             console.log("Request: ", url);
