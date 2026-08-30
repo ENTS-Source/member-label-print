@@ -52,12 +52,13 @@ func doPrint(w http.ResponseWriter, r *http.Request) {
 
 func doPrintBallot() error {
 	log.Println("PRINT BALLOT")
-	return printer.DoPrintBallot(2026, false, []string{
+	return printer.DoPrintBallot(2026, true, []string{
 		"Travis Ralston",
 		"Michael Kulpa",
 		"Karly Kulpa",
 		"Rudy Janvier",
 		"Chris Bacivan",
+		"Pearse Mckinney",
 	})
 }
 
